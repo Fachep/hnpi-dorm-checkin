@@ -1,0 +1,11 @@
+div#app {
+  height: unset !important;
+}
+
+div#app > div#sdkq-box {
+  height: unset !important;
+}
+
+div#app > div#sdkq-box > div#sdkq-kqqd {
+  height: unset !important;
+}
