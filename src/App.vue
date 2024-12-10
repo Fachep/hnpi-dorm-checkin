@@ -1,5 +1,5 @@
 <template>
-  <div class="root" v-if="instance">
+  <div class="root">
     <div class="xg-flex-SC">
       <div class="xg-font-title-3 xg-text-color--title" style="flex: 1 1 0%;">强制签到</div>
     </div>
@@ -7,47 +7,46 @@
         :center="centerCoordinate" :size=400></Map></div>
     <div class="box">
 
-
-      <div>
-        <div class="xg-font-maintext">
-          <span class="xg-text-color--minor" style="margin-right: 8px;">签到点</span>
-          <select class="xg-multi-selectv2" v-model="selected">
+      <table>
+        <tr class="xg-font-maintext">
+          <td><span class="xg-text-color--minor" style="margin-right: 8px;">签到点</span></td>
+          <td><select class="xg-multi-selectv2" v-model="selected">
             <option class="van-cell" v-for="(item, i) in instance.ddList" :key="item.DDDM" :value="i">{{ item.QDDD }}
             </option>
-          </select>
-        </div>
-        <div class="xg-font-maintext">
-          <span class="xg-text-color--minor" style="margin-right: 8px;">经度</span>
-          <span class="xg-text-color--title">{{ selectedPosition?.JDZB }}</span>
-        </div>
-        <div class="xg-font-maintext">
-          <span class="xg-text-color--minor" style="margin-right: 8px;">维度</span>
-          <span class="xg-text-color--title">{{ selectedPosition?.WDZB }}</span>
-        </div>
-        <div class="xg-font-maintext">
-          <span class="xg-text-color--minor" style="margin-right: 8px;">半径</span>
-          <span class="xg-text-color--title">{{ selectedPosition?.YXFW }}</span>
-        </div>
-      </div>
+            </select></td>
+        </tr>
+        <tr class="xg-font-maintext">
+          <td><span class="xg-text-color--minor" style="margin-right: 8px;">经度</span></td>
+          <td><span class="xg-text-color--title">{{ selectedPosition?.JDZB }}</span></td>
+        </tr>
+        <tr class="xg-font-maintext">
+          <td><span class="xg-text-color--minor" style="margin-right: 8px;">维度</span></td>
+          <td><span class="xg-text-color--title">{{ selectedPosition?.WDZB }}</span></td>
+        </tr>
+        <tr class="xg-font-maintext">
+          <td><span class="xg-text-color--minor" style="margin-right: 8px;">半径</span></td>
+          <td><span class="xg-text-color--title">{{ selectedPosition?.YXFW }}</span></td>
+        </tr>
+      </table>
 
-      <div>
-        <div class="xg-font-maintext">
-          <span class="xg-text-color--minor" style="margin-right: 8px;">当前位置</span>
-          <i class="xg-text-color--primary van-icon van-icon-replay" @click="random"></i>
-        </div>
-        <div class="xg-font-maintext">
-          <span class="xg-text-color--minor" style="margin-right: 8px;">地点</span>
-          <input v-model="address" type="text">
-        </div>
-        <div class="xg-font-maintext">
-          <span class="xg-text-color--minor" style="margin-right: 8px;">经度</span>
-          <span class="xg-text-color--title">{{ checkinCoordinate[0] }}</span>
-        </div>
-        <div class="xg-font-maintext">
-          <span class="xg-text-color--minor" style="margin-right: 8px;">维度</span>
-          <span class="xg-text-color--title">{{ checkinCoordinate[1] }}</span>
-        </div>
-      </div>
+      <table>
+        <tr class="xg-font-maintext">
+          <td colspan="2"><span class="xg-text-color--minor" style="margin-right: 8px;">当前位置</span>
+            <i class="xg-text-color--primary van-icon van-icon-replay" @click="random"></i></td>
+        </tr>
+        <tr class="xg-font-maintext">
+          <td><span class="xg-text-color--minor" style="margin-right: 8px;">地点</span></td>
+          <td><input v-model="address" type="text"></td>
+        </tr>
+        <tr class="xg-font-maintext">
+          <td><span class="xg-text-color--minor" style="margin-right: 8px;">经度</span></td>
+          <td><input v-model.number="checkinCoordinate[0]" type="number" max="137.8347" min="72.004"></td>
+        </tr>
+        <tr class="xg-font-maintext">
+          <td><span class="xg-text-color--minor" style="margin-right: 8px;">维度</span></td>
+          <td><input v-model.number="checkinCoordinate[1]" type="number" max="55.8271" min="0.8293"></td>
+        </tr>
+      </table>
 
       <div style="margin: auto 0 0 auto;">
         <div class="van-button van-button--default van-button--normal"
@@ -69,14 +68,20 @@
 </template>
 
 <script lang="ts">
-import { PointData, useInstance } from "./checkin";
-import API from "./api";
+import type { PointData, Instance } from "./checkin";
+import { requireAsync } from "./utils";
 import Map from "./components/Map.vue";
 import { GM_getValue, GM_setValue } from "$";
 
 export default {
   components: {
     Map,
+  },
+  props: {
+    instance: {
+      type: Object as () => Instance,
+      required: true,
+    },
   },
   data() {
     return {
@@ -86,9 +91,6 @@ export default {
     };
   },
   computed: {
-    instance() {
-      return useInstance();
-    },
     ready(): boolean {
       return this.selectedPosition != undefined && this.checkinCoordinate.every(i => i != 0);
     },
@@ -111,9 +113,14 @@ export default {
       };
 
       await MOB_UTIL.doPost({
-        url: API.addKqInfo,
+        url: (
+          await requireAsync(['api']) as Record<string, string>
+        ).addKqInfo,
         params,
       });
+
+      this.instance.dkDialogShow = true;
+      this.instance.getKqInfo();
     },
     save() {
       GM_setValue("position", this.selectedPosition!.DDDM);
@@ -132,7 +139,7 @@ export default {
       }
     },
     random() {
-      (this.$refs.map as {random():void} | undefined)?.random();
+      (this.$refs.map as { random(): void; } | undefined)?.random();
     },
   },
   watch: {
@@ -176,5 +183,9 @@ export default {
 
 .van-button+.van-button {
   margin-left: 12px;
+}
+
+tr.xg-font-maintext>td>input {
+  width: 100%;
 }
 </style>

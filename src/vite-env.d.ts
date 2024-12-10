@@ -1,3 +1,4 @@
 /// <reference types="vite/client" />
 /// <reference types="vite-plugin-monkey/client" />
-//// <reference types="vite-plugin-monkey/global" />
+/// <reference types="vue-router" />
+/// <reference types="vite-plugin-monkey/global" />

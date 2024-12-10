@@ -1,5 +1,5 @@
 import type { CombinedVueInstance } from "vue/types/vue";
-import Vue from "vue";
+import Vue, { type ComponentOptions } from "vue";
 
 interface ConfigInfo {
     "IN_TIME": boolean;
@@ -36,32 +36,13 @@ interface Data {
     yxfwList: number[]; // 签到地点允许范围（多个）
     //当前地址
     address: string;
+    dkDialogShow: boolean;
 };
 
-export type Instance = CombinedVueInstance<Vue, Data, {}, {canSign: boolean}, {}>;
-
-type VueElement = HTMLElement & {__vue__?: Instance};
-
-function getInstance(): Instance | null {
-    return (document.getElementById('kqqd-smkq') as VueElement | null)?.__vue__ ?? null;
+interface Methods {
+    refreshLocation(): void;
+    getKqInfo(): void;
 }
 
-const store = new Vue({
-    data() {
-        return {
-            instance: getInstance(),
-        };
-    }
-})
-
-const timer = setInterval(() => {
-    const instance = getInstance();
-    if (instance?.ddList.length) {
-        clearInterval(timer);
-        store.instance = instance;
-    }
-}, 200);
-
-export function useInstance(): Instance | null {
-    return store.instance;
-}
+export type Instance = CombinedVueInstance<Vue, Data, Methods, {canSign: boolean}, {}>;
+export type Component = ComponentOptions<Vue, Data, Methods, {canSign: boolean}>;
