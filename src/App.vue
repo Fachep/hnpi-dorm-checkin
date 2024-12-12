@@ -48,7 +48,7 @@
         </tr>
       </table>
 
-      <div style="margin: auto 0 0 auto;">
+      <div class="buttons">
         <div class="van-button van-button--default van-button--normal"
           :class="selectedPosition ? '' : 'van-button--disabled'" :disabled="!selectedPosition" @click="save">
           <div class="van-button__content"><span class="van-button__text">保存</span></div>
@@ -165,9 +165,12 @@ export default {
   border-radius: 16px;
 }
 
-.box {
-  display: flex;
-  justify-content: space-between;
+@media screen and (min-width: 900px) {
+  .box {
+    display: flex;
+    justify-content: space-between;
+  }
+  
 }
 
 .box>div {
@@ -187,5 +190,11 @@ export default {
 
 tr.xg-font-maintext>td>input {
   width: 100%;
+}
+
+.buttons {
+  margin: auto 0 0 auto;
+  display: flex;
+  justify-content: end;
 }
 </style>

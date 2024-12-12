@@ -36,7 +36,8 @@ export default defineConfig({
       build: {
         externalGlobals: {
           prcoords: cdn.jsdelivrFastly('PRCoords', 'js/PRCoords.min.js'),
-          geolib: cdn.jsdelivrFastly('geolib', 'lib/index.min.js'),
+          // geolib: cdn.jsdelivrFastly('geolib', 'lib/index.min.js'), // embed cause of requirejs incompatible
+        
         },
       },
     }),

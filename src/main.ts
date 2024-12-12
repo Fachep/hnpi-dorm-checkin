@@ -23,11 +23,13 @@ if (location.pathname.endsWith("*default/index.do")) {
     });
 
     const modulePath = 'newmob/xscq/kqqd/dwdk/dwdk';
+    const _define = typeof define === 'function' ? define : unsafeWindow.define;
+
     require(
         [modulePath],
         function (_module: (...args: any[]) => Component) {
             require.undef(modulePath);
-            unsafeWindow.define(
+            _define(
                 modulePath,
                 () => function (this: any) {
                     const component = _module.apply(
